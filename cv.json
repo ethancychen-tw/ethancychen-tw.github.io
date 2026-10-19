@@ -1,0 +1,839 @@
+{
+  "$comment": "Structured CV corpus. Every fact here is also presented on the human-readable pages at the same site — this file is a different resolution of the same record, not additional hidden content.",
+  "person": {
+    "name": {
+      "full": "Chung Yen Chen",
+      "preferred": "Ethan",
+      "display": "Chung Yen (Ethan) Chen"
+    },
+    "headline": "Software Engineer — Data Platform / Infrastructure",
+    "location": "Taipei, Taiwan",
+    "contact": {
+      "email": "ethan.cychen@gmail.com",
+      "linkedin": "https://www.linkedin.com/in/ethancychen/",
+      "github": "https://github.com/ethancychen-tw",
+      "site": "https://ethancychen-tw.github.io/"
+    },
+    "languages": [
+      {
+        "name": "Mandarin",
+        "level": "native"
+      },
+      {
+        "name": "English"
+      }
+    ]
+  },
+  "positioning": {
+    "default": "Brings data engineering and ML best practices into organisations.\n"
+  },
+  "roles": [
+    {
+      "id": "google",
+      "title": "Software Engineer",
+      "organization": {
+        "name": "Google LLC",
+        "url": "https://www.google.com/"
+      },
+      "start": "2024-05",
+      "period": "May 2024 – Present",
+      "tags": [
+        "swe",
+        "data-platform",
+        "data-eng",
+        "infra",
+        "current"
+      ],
+      "highlights": [
+        {
+          "id": "google-pte-turnaround",
+          "summary": "Joined to scale a 20-model data platform whose deploys failed outright roughly weekly. Made version control the only deploy source and generated workflow DAGs from declared dependencies; deploys have succeeded since. The first version of what became the framework came out of that work.\n",
+          "tags": [
+            "swe",
+            "data-platform",
+            "data-eng",
+            "leadership"
+          ],
+          "weight": 75,
+          "detail": {
+            "problem": "The mandate called for an ELT and data governance platform, but analytics engineering practices had not yet been established in the org. Meanwhile deploys failed outright roughly weekly — workflow routing issues, table names that drifted from their DDL, deployed artifacts that did not match version control — and a single long central script had become too fragile to change safely.\n",
+            "approach": "Stabilise first, then generalise — with the second step in view from early on. About two months in, I proposed building toward a framework, an internal dbt-like tool, and did the clean-up with that in mind. Until August 2024 the work was hygiene. Every part of the codebase went into version control, and deploys were made only from it. Obsolete data sources (spreadsheets, text files, ad-hoc database tables) were retired, and domain metadata was centralised in one shared location. The GoogleSQL macros were consolidated: three partly overlapping macros became one standard set with a single import mechanism, and invocation was reworked so a developer wrote only the SELECT that defined a table — which replaced the fragile central script and showed what a framework would need.\n\nIn October 2024 I built its first version with a framework's structure rather than as a one-off: org-specific configuration was extracted from the implementation from the start, before any second consumer existed to justify the extra work. Dependencies came from {{ref}}, so the compiler generated the workflow DAG and nobody routed workflows by hand. A model's file path became its materialised table name, so a name could no longer drift from its DDL, and each file held exactly one data model, so finding a model meant finding its file — the guarantees a dbt user takes for granted. The first version also compiled SQL through Jinja and carried model metadata, table and column descriptions and pass/fail data quality tests. When a second data platform was built on it in early 2025, it gained incremental materialisation, textproto metadata, freshness checks and a first prototype of Python models; warning-mode tests with thresholds followed later.\n\nSince late 2024, no deploy on any platform built on the framework has failed — none from a version-control mismatch, none needing a hand-routed workflow, none from a name drifting from its DDL. What remains is new-feature risk: about twice a year, a bug in a new framework feature has affected that feature on some platforms while the deploy itself succeeded, each fixed within a day.\n",
+            "hard_parts": "Two kinds of difficulty, and the second was larger. Technically, this was 2024 — before agentic coding was reliable enough to lean on — and I was simultaneously learning my way around the monorepo, Blaze, and the internal library conventions. Organisationally, introducing analytics engineering meant establishing a new development paradigm rather than swapping a tool. Adoption required shifting developer habits and pipeline workflows toward declarative data modelling and shared ownership, rather than simply providing new interfaces.\n",
+            "reflection": "The prototype took shortcuts I later replaced deliberately. Model metadata was JSON before it was textproto, because I knew the fields and format would churn constantly at that stage and did not want to commit to a schema. {{ref}} did not return a relation object at first — it was string substitution via regex. Both were the right call for a prototype whose purpose was to find the interface, and both had to go before it could be a platform.\n"
+          }
+        },
+        {
+          "id": "google-platform-framework",
+          "summary": "Designed and built an analytics-engineering framework that brings dbt's model — SELECT-as-model, lineage, materialisations, quality tests — to Google's internal query engine and dashboards, with agent skills that let engineers without an analytics-engineering background build documented, tested models.\n",
+          "outcome": "5x faster data model development, as reported by its first users in 2024",
+          "tags": [
+            "data-platform",
+            "swe",
+            "infra",
+            "flagship"
+          ],
+          "weight": 100,
+          "detail": {
+            "problem": "Analytics across 20+ functional areas ran on hand-written SQL scripts, ad-hoc workflows and cron jobs, mostly in PLX — Google's internal SQL-and-dashboard tool, roughly its counterpart to Data Studio. It made starting easy — open a script, write SQL, much like opening a doc — and teams used it that way: scripts with no environment separation, no dependency graph, no version control, no data quality tests and no lineage. Teams accreted scripts and dashboards, and after a few rounds of onboarding and attrition would find themselves owning a 2,000-line SQL file nobody was willing to touch, with product codenames and OS versions hardcoded inline instead of held in dimension tables. Metric definitions drifted between teams because every team built its own pipeline — the same divergence I had already dealt with at MediaTek. Everyone could write SQL; only a few had a data modelling or data management background.\n",
+            "constraint": "Other internal tooling could build pipelines — Flume, Google's internal forerunner of Apache Beam — but it assumed a strong distributed-systems background and was not aimed at analytics engineering concerns: metadata, quality tests, governance. The gap was not compute. Nothing served the people who could write SQL but were not infrastructure engineers.\n\nThe shape of demand set a second constraint. New analytics efforts start quickly and in quantity, with little distinction drawn up front between a prototype and a production system — reasonably, since most explorations never need to become production. But the ones that succeed do, so whatever the tooling was, a pipeline had to be cheap to scaffold and able to grow into production grade alongside its need, without a rewrite at the moment it proved useful. The 20-model platform I inherited was what happens without that: prototype-grade work that had outgrown its structure.\n",
+            "approach": "Built on top of what already existed rather than beside it. Several wrappers around PLX were already in use, and one of them — widely adopted, and recognised by the PLX team itself — had already solved the plumbing: ACLs and naming for PLX assets — the scripts, dashboards and workflows themselves, not the relations those scripts materialise — plus environment-based substitution. The framework sits on that layer rather than replacing it, and adds what was missing above it: models as a dependency graph rather than a pile of scripts, materialisation strategy, data quality tests, governance, and a data dictionary. It also lifts environment handling out of the SQL itself, so a developer no longer writes environment placeholders inline and no longer has to carry the substitution mechanism in their head while writing a query.\n\nAbove that foundation, a close port of the dbt authoring experience, so that familiarity was itself a feature: a data model is just a SELECT statement, templated with Jinja; dependencies and lineage are derived automatically from {{ref}} rather than declared by hand; {{this}} resolves self-references; each model picks its own materialisation — view, table or incremental; data quality tests run in either error or warning mode against a threshold, and freshness is checked alongside them; models can be written in Python where SQL runs out; and everything ships through the standard internal CI/CD release path rather than a bespoke one.\n\nThree places I diverged from dbt. Macros can be defined locally beside the model that uses them, rather than being confined to a dedicated macros/ directory. Every data model is strictly one SQL file plus one textproto carrying its metadata — making metadata a required file rather than an optional block turns the interface itself into the teaching, since you cannot ship a model without stating what it is, and that is exactly the discipline the old 2,000-line scripts lacked. The file guarantees the metadata exists, not that it is complete. It also sits with the internal protobuf convention instead of fighting it, which had been one of the frictions against adopting dbt's YAML in the first place.\n\nThe third divergence is the one that mattered most locally: the framework binds into the dashboard tool's data-source configuration, so a dashboard resolves to the correct environment automatically. That closes the loop on the original problem — these teams' work always ended in a dashboard, and dbt has nothing to say about dashboards, so without it the environment discipline would have stopped one step short of where the pain actually was.\n",
+            "hard_parts": "Porting was not transcription. dbt's incremental materialisation could not be carried over as it was, so that strategy had to be redesigned around the operations the target runtime offers rather than translated across — the hardest single piece of the build. The execution environment is also declarative, so anything procedural, such as inspecting a table's schema before deciding what to do with it, had to be engineered in rather than assumed.\n",
+            "rejected": "Dataform targets BigQuery, and internal data does not live there — it sits in Spanner and Napa, reached through F1, the internal distributed query engine that plans across heterogeneous stores in roughly the way Trino does. So the obvious alternative was to write an adapter letting dbt Core target F1, and bring the mature dbt ecosystem in wholesale. I argued against it — not on engineering difficulty, but because it solved the wrong problem.\n\ndbt's value proposition is bound to the environmental assumptions of the external modern data stack: git-centric version control and review, CLI-driven execution, coarse-grained credential grants against a cloud warehouse, and a runtime shape in which SQL compiles and is handed to a single warehouse. An adapter swaps out the bottom-most execution target and leaves every one of those assumptions standing — so we would still have had to bypass or rebuild the version control, code review, fine-grained data governance and pipeline orchestration we already had, in order to accommodate dbt's worldview. Presented as \"adopting a tool\", it was really \"standing up a parallel toolchain beside the existing infrastructure\" — manufacturing exactly the kind of silo we were trying to eliminate.\n\nThe framework takes the opposite bet: port dbt's philosophy, not its runtime. The scarce thing was never the execution engine — that already existed internally and fit our scale and governance model far better than any warehouse adapter would. The scarce thing was the layer dbt adds between exploration and production: explicit dependencies and lineage, knowledge-as-code that enters review, machine-verifiable tests and freshness, and ownership you can trace. We grew that layer on top of the authoring experience analysts already had in PLX and the query runtime that already existed, so they kept their workflow and gained the ability to forge a script into a trustworthy asset. That adds connective tissue to the existing fabric instead of another silo. dbt gave us a validated layered design, not a product to import.\n",
+            "outcome_detail": "5x is a user-reported figure from 2024, gathered from the first platform's users while it was still small.\n",
+            "scale": "As of September 2026: 13 data platforms — each roughly the analogue of a dbt project, serving one application's reporting and analytics needs — carrying over 1,000 data models between them for thousands of users, with the largest single platform holding 250+ models.\n"
+          }
+        },
+        {
+          "id": "google-platform-adoption",
+          "summary": "Grew the framework by word of mouth to 13 data platforms and 1,000+ data models for thousands of users, in business units well beyond its Pixel/Android home.\n",
+          "tags": [
+            "data-platform",
+            "leadership",
+            "current",
+            "flagship"
+          ],
+          "weight": 95,
+          "detail": {
+            "problem": "When a second data platform was needed in early 2025, the request was to clone the first one and tailor the copy. Because the first had been built with its configuration already extracted (see the first highlight), the second could be built on the same mechanism instead of forked — though at the time it was described as another platform built the same way, not as a framework.\n\nBy January 2026 the team was mixing three kinds of work in one discussion: building data models on a platform, administering a platform, and developing features every current and future platform would use. I wrote a design doc that formally named it a framework, to give the team words to keep those three apart.\n",
+            "scale": "Two platforms in early 2025, eight by early 2026, thirteen by September 2026 — carrying 1,000+ data models for thousands of users (distinct users in query logs over 90 days), built by about 100 developers, largest platform 250+ models, and now in use by business units outside the original Pixel/Android org.\n\nMeasured in September 2026 across Android and Pixel software, against tables built without the framework: 95% of framework tables fully documented — a table description and every column that needs one — against under 1%; and 50% with data quality checks against under 1%. By design, about 30% of models carry no tests of their own: a column already tested upstream is not tested again unless the model computes something new from it, so a mart that only renames a staging model's columns has none while every column it exposes is still covered. That puts the practical ceiling near 70%. The gap between 50% and 70% is older work — models built before some test types existed or when their authors had no time to add them, never revisited since, and models whose sources were deprecated as internal systems changed, left in place awaiting clean-up. The note the framework appends to each description for agents is not counted as documentation.\n",
+            "collaboration": "I own the framework and lead its core development, but without a manager or tech-lead title — the ownership is real and the authority is informal. Collaborators and contributors arrived before any process for them did, and that gap caused the main difficulty at scale, described under what made it hard.\n",
+            "outcome_detail": "Mostly organic. The clearest case: an engineer on a team with essentially no connection to my org found the framework through answers I had posted on the internal Q&A system, and told me he had worked with the existing tooling for four years — he had used dbt before joining and had been surprised that nothing equivalent existed internally. That adoption was pull, not push, and the validation came from someone who already knew what the external state of the art looked like. Newcomers found it the same way: in August 2026 an intern who came across the framework built a first pipeline within a week — by their own estimate, a month's work otherwise.\n\nHis experience also explained the slow start. When he proposed the framework to his own teammates, it was new to them too: analytics engineering as a discipline had little internal presence, so every team met the idea for the first time.\n",
+            "reflection": "Being asked for a clone rather than a framework surprised me at the time, and I have tried not to leave it at that reading. Under real pressure to show adoption, repeating something that already worked was a reasonable bet — in their seat, with their information, I might well have made the same call. What I took from it is that when you propose a category of tooling nobody around you has encountered, the burden of making it legible is yours: a decision that looks wrong from inside the expertise is often reasonable from outside it.\n",
+            "hard_parts": "The primary challenge at scale was change control. With decentralised contributions across multiple teams and no formal owner-review gate, platforms added their own overrides — such as how often warning-level tests run — and some of them relaxed core invariants, such as allowing more than one data model in a model file, which undoes the one-SQL-plus-one-textproto contract. And changes made to suit one platform changed other platforms' behaviour — functional regressions, never a failed deploy.\n"
+          }
+        },
+        {
+          "id": "google-shape-up",
+          "summary": "Lead the framework's contributors without a manager or tech-lead title; introduced Shape Up — pitches and a team betting table — which sharply cut ad-hoc feature additions.\n",
+          "tags": [
+            "leadership",
+            "data-platform",
+            "current"
+          ],
+          "weight": 80,
+          "detail": {
+            "problem": "The framework has no dedicated staffing. Contributors are borrowed from their own teams and routinely pulled away mid-feature, so until early 2026 features sometimes landed before a design pass, and some stayed at prototype quality for long stretches after their implementer moved on. Combined with contributions landing outside owner review, the framework's quality had no single point of review.\n",
+            "approach": "Four-week build cycles followed by a two-week cool-down — shorter than Shape Up's standard six, because agentic coding has compressed implementation time — with a weekly sync during the build.\n\nI write most of the pitches, and chose pitches over the design documents that are Google's convention because of what a pitch leaves out. It sets the problem, the appetite and the boundaries, and deliberately leaves implementation choices to the developer who builds it. If a pitch were detailed enough to dictate the implementation, there would be no reason to have a team build it.\n\nThe betting table is the whole team, all five contributors, and it turned out to do more than choose work: it is where requests from leadership, the stability of the framework and its longer-term roadmap get weighed against each other in one room, rather than arriving as separate interruptions.\n",
+            "collaboration": "None of the contributors report to me, and all of them are part-time on the framework. What made the process adoptable was where they came from: every one of them joined framework development after the framework had already solved a problem for them in 2024–2025, on their own leadership's requests. The team is converted users. They knew I owned the framework and had the deepest background in analytics engineering, and they had seen the work deliver — so the authority the process needed already existed, earned through the tool rather than conferred by a title. The split also matters: I shape, but the team bets, which turns an owner's informal authority into a commitment the whole group has made.\n",
+            "outcome_detail": "Ad-hoc, bolted-on feature additions dropped sharply once work had to go through a pitch and a bet. The review gap has only partly closed: I am now an assigned reviewer on framework changes, but not the sole one, so what gets built is governed more tightly than how it gets merged.\n",
+            "reflection": "Shape Up mattered most for what it let a part-time team attempt. From late 2025, agent guidance had grown piecemeal: prompt templates and docs added now and then, and each user working out their own approach. Designing it properly — routing and decoupling agent knowledge between skills and docs, and between the framework and each platform — was work nobody had the time to own. Shape Up turned it into a pitch: one cycle, with one person owning the design. That is a main reason the agent skills became one architecture rather than a set of unrelated skills.\n"
+          }
+        },
+        {
+          "id": "google-agent-skills",
+          "summary": "Designed the framework's agent architecture — role-based skills and docs, per-platform context files, and table descriptions that point a searching agent to how to read them — so engineers without an analytics-engineering background build documented, tested data models by describing the business problem.\n",
+          "outcome": "since the September 2026 release, about 50 developers — everyone who has built or revised a data model since — have done it with the skills",
+          "tags": [
+            "data-platform",
+            "current",
+            "flagship"
+          ],
+          "weight": 78,
+          "detail": {
+            "problem": "Most of the framework's users could write SQL; few had a data modelling or data management background. The framework gave every table a place for documentation and tests, but writing models well — tests that matter, descriptions that say something — still took analytics-engineering judgement most users did not have. Running a platform took knowledge that lived in a few people's heads: what to do about a data quality failure, how to bring a legacy PLX project in, how to stand up a new platform. And on the consumer side, agents searching for data had no way to tell how a framework table was meant to be read.\n",
+            "approach": "I researched the design through early 2026 — skills versus docs, and company-wide versus team versus personal agent harnesses — by trying designs on my own work, and refined it on the platforms I own until it was pitched and built as one Shape Up cycle in September 2026, with me owning the design, and published at the end of it. It has two layers. The framework carries an agents.md that defines roles — platform administrator, analytics engineer, data consumer — and points each to its docs and skills: docs explain concepts to people and agents alike, skills are instructions written mainly for agents. Each data platform carries a lean agents.md of its own — a pointer to the framework's, the conventions the platform follows and its extensions — and a memory.md holding its domain knowledge: business background, goals and stakeholders.\n\nAn analytics engineer's agent starts from the platform's agents.md, is routed to the framework's analytics-engineer role, and reads memory.md for the business context. The framework's agents.md tells every platform's agent to keep that platform's memory.md current, so updates are proposed with each change and reviewed with the code. The developer states the business problem and the reporting it needs; the agent produces the SQL, descriptions, data quality tests and governance metadata in the framework's conventions. The administrator role carries the platform knowledge: how to triage a data quality issue found in a source or in a transformation, and where to file and resolve it; how to migrate a legacy PLX project into a data platform; and how to scaffold a new platform — CI/CD, Borg configuration (Google's cluster manager, Kubernetes' predecessor) and switching on advanced features.\n\nNone of it has to be invoked. The skills load automatically on ordinary requests — \"build a data pipeline\", \"build data models about X\", \"I'd like to analyse this data\" — so a developer never needs to know they exist.\n\nThose conventions are explicit — the skills write down practice the framework already followed. A model gets a table description, and data quality tests wherever it has logic to test — a mart that only re-exposes a table for governance needs none of its own. A column described as uniquely identifying a row gets unique and not-null tests, and foreign keys get relationship tests. A column already tested upstream is not tested again unless the model computes something new from it. Whether a column needs a description depends on context, so a self-explanatory one can be left blank; what is not allowed is a description that says nothing, and an agent rule checks each description the agent writes or reviews — including ones a person wrote — for exactly that.\n\nA data consumer's agent is pointed in from the data itself. After each table's own description, the framework appends a generated note telling a reading agent which platform and framework the table belongs to, and routing it to the framework's data-consumer role — where it learns staging from mart models, dev from prod, and where a model's tests live. An agent that finds a framework table through search is pointed to how to read it.\n",
+            "outcome_detail": "Since release, about 50 developers — everyone who has built or revised a data model since — have done it with the skills. In early October 2026, within two weeks of release, engineers on a neighbouring team built data models to these conventions with no guidance from us. The same month, an engineer had the company's internal agent build an interactive HTML dashboard, and the agent chose the right mart table from the framework's table descriptions. The coverage figures under the adoption highlight were measured in September 2026, as the skills shipped, so they show the framework before the skills rather than their effect.\n"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mediatek",
+      "title": "Senior Engineer",
+      "organization": {
+        "name": "MediaTek Inc",
+        "url": "https://i.mediatek.com/"
+      },
+      "start": "2022-08",
+      "end": "2023-09",
+      "period": "Aug 2022 – Sep 2023",
+      "tags": [
+        "data-eng",
+        "swe",
+        "infra",
+        "mobile",
+        "leadership"
+      ],
+      "highlights": [
+        {
+          "id": "mediatek-elt-architecture",
+          "summary": "Led architecture and development of the GCP ELT pipeline for \"service M\", a mobile-device resource monitor, giving departments one data format to pinpoint device issues.\n",
+          "outcome": "30x faster identification of resource anomalies",
+          "tags": [
+            "data-eng",
+            "infra",
+            "mobile",
+            "flagship"
+          ],
+          "tech": [
+            "GCP",
+            "Airflow",
+            "Dataform"
+          ],
+          "weight": 90
+        },
+        {
+          "id": "mediatek-infra-constraints",
+          "summary": "Chose the stack with IT to fit infrastructure constraints (Dash, Redis, Drone CI, Airflow, Dataform) and built the models and dashboards behind M's analyses.\n",
+          "outcome": "90% reduction in analytics processing time for M data",
+          "tags": [
+            "data-eng",
+            "infra",
+            "analytics"
+          ],
+          "tech": [
+            "Dash",
+            "Redis",
+            "Drone CI",
+            "Airflow",
+            "Dataform"
+          ],
+          "weight": 70
+        },
+        {
+          "id": "mediatek-workshop",
+          "summary": "Ran a cross-departmental technical workshop for 40 people introducing dbt and dataform, and best practices for large-database management and filter queries.\n",
+          "tags": [
+            "leadership",
+            "teaching",
+            "data-eng"
+          ],
+          "weight": 50
+        }
+      ]
+    },
+    {
+      "id": "tresl",
+      "title": "Senior Data Scientist",
+      "organization": {
+        "name": "Tresl Inc",
+        "url": "https://www.tresl.co/"
+      },
+      "start": "2020-08",
+      "end": "2022-08",
+      "period": "Aug 2020 – Aug 2022",
+      "tags": [
+        "ds",
+        "data-eng",
+        "analytics",
+        "ecommerce",
+        "leadership"
+      ],
+      "highlights": [
+        {
+          "id": "tresl-metric-framework",
+          "summary": "Built a unified metric calculation framework for Shopify DTC brands, consolidating 70% of metric computation across millions of products and hundreds of millions of orders.\n",
+          "tags": [
+            "data-eng",
+            "ecommerce",
+            "flagship"
+          ],
+          "tech": [
+            "SQL",
+            "Python"
+          ],
+          "weight": 90,
+          "detail": {
+            "scale": "millions of products, hundreds of millions of orders"
+          }
+        },
+        {
+          "id": "tresl-product-journey",
+          "summary": "Pioneered \"Product Journey\" in Segments, Tresl's main product, showing brands what customers bought on their 1st, 2nd and 3rd orders.\n",
+          "outcome": "40% increase in new subscription business",
+          "tags": [
+            "ds",
+            "ml",
+            "ecommerce",
+            "flagship"
+          ],
+          "tech": [
+            "Python"
+          ],
+          "weight": 90
+        },
+        {
+          "id": "tresl-dbt-elt",
+          "summary": "Simplified the ELT pipeline with dbt — cutting code redundancy and streamlining metric computation, including a rebuild of customer lifetime value (CLV) modelling for accurate forecasting across thousands of brands.\n",
+          "outcome": "40% faster and more maintainable pipeline",
+          "tags": [
+            "data-eng",
+            "forecasting",
+            "ecommerce"
+          ],
+          "tech": [
+            "dbt"
+          ],
+          "weight": 75
+        },
+        {
+          "id": "tresl-warehouse-migration",
+          "summary": "Helped migrate core data infrastructure AWS → Snowflake → GCP, tuning database settings, partitioning and clustering.\n",
+          "outcome": "80%+ reduction in operating cost",
+          "tags": [
+            "infra",
+            "data-eng",
+            "flagship"
+          ],
+          "tech": [
+            "AWS",
+            "Snowflake",
+            "GCP",
+            "BigQuery"
+          ],
+          "weight": 80
+        },
+        {
+          "id": "tresl-client-facing",
+          "summary": "Worked directly with non-technical teams at large e-commerce brands (True Botanicals, Meshki, Labatt) across beauty, fashion and F&B — presenting analytics insights and building dashboards.\n",
+          "tags": [
+            "analytics",
+            "ecommerce",
+            "leadership"
+          ],
+          "tech": [
+            "Python",
+            "SQL",
+            "Hex.tech"
+          ],
+          "weight": 55
+        },
+        {
+          "id": "tresl-team-growth",
+          "summary": "Took part in recruiting and growing the data and engineering team.\n",
+          "outcome": "5x team growth",
+          "tags": [
+            "leadership"
+          ],
+          "weight": 45
+        }
+      ]
+    },
+    {
+      "id": "mobagel",
+      "title": "Data Scientist",
+      "organization": {
+        "name": "MoBagel Inc",
+        "url": "https://mobagel.com/"
+      },
+      "start": "2019-05",
+      "end": "2020-08",
+      "period": "May 2019 – Aug 2020",
+      "tags": [
+        "ds",
+        "ml",
+        "forecasting"
+      ],
+      "highlights": [
+        {
+          "id": "mobagel-forecasting-research",
+          "summary": "Researched state-of-the-art ML for time series forecasting, building a generalized framework that adapts across advertising, retail and manufacturing.\n",
+          "outcome": "up to 20% forecasting improvement",
+          "tags": [
+            "ds",
+            "ml",
+            "forecasting",
+            "flagship"
+          ],
+          "tech": [
+            "Python"
+          ],
+          "weight": 75
+        },
+        {
+          "id": "mobagel-predictive-projects",
+          "summary": "Delivered predictive analytics for enterprise clients in retail, advertising (two-stage XGBoost to flag weak ads early) and display manufacturing.\n",
+          "outcome": "80% close rate on enterprise projects; 30% more return on ad spend and 30% advertising cost savings",
+          "tags": [
+            "ds",
+            "ml",
+            "forecasting"
+          ],
+          "tech": [
+            "XGBoost",
+            "Python"
+          ],
+          "weight": 70
+        },
+        {
+          "id": "mobagel-sdk",
+          "summary": "Coordinated across departments on predictive features for internal SDKs, making them scikit-learn compatible, and ran projects end to end.\n",
+          "tags": [
+            "swe",
+            "ds",
+            "leadership"
+          ],
+          "tech": [
+            "Python",
+            "scikit-learn"
+          ],
+          "weight": 50
+        }
+      ]
+    },
+    {
+      "id": "delta",
+      "title": "Big Data Analyst (Internship)",
+      "organization": {
+        "name": "Delta Electronics",
+        "url": "https://www.deltaww.com/en-US/index"
+      },
+      "start": "2016-08",
+      "end": "2016-12",
+      "period": "Aug 2016 – Dec 2016",
+      "tags": [
+        "ds",
+        "bioinformatics",
+        "published"
+      ],
+      "highlights": [
+        {
+          "id": "delta-otu-pipeline",
+          "summary": "Surveyed and compared metagenomic data analysis techniques and built Delta's first NGS operational taxonomic unit (OTU) analysis pipeline.\n",
+          "tags": [
+            "ds",
+            "bioinformatics"
+          ],
+          "weight": 40
+        },
+        {
+          "id": "delta-cross-discipline",
+          "summary": "Worked with life-science faculty while starting with little background in sequencing or metagenomics; the collaboration produced a published paper on performance evaluation in OTU analysis.\n",
+          "tags": [
+            "ds",
+            "bioinformatics",
+            "published",
+            "leadership"
+          ],
+          "weight": 40,
+          "related_project": "taxonomy-metrics"
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "epa-review-system",
+      "title": "EPA Review System",
+      "year": 2021,
+      "tags": [
+        "swe",
+        "healthcare",
+        "flagship"
+      ],
+      "tech": [
+        "LINE Bot SDK",
+        "Flask",
+        "SQLAlchemy",
+        "AWS"
+      ],
+      "weight": 70,
+      "summary": "A grading and promotion platform for Taiwanese ENT doctors, built on the LINE Bot SDK so evaluators could work from the messaging app they already used.\n",
+      "outcome": "5x faster evaluation process",
+      "links": [
+        {
+          "label": "Demo",
+          "url": "https://www.youtube.com/watch?v=nB1bcGiC-Fg"
+        }
+      ]
+    },
+    {
+      "id": "sentiment-analysis",
+      "title": "Web Crawler and Sentiment Analysis",
+      "year": 2021,
+      "tags": [
+        "ds",
+        "nlp"
+      ],
+      "tech": [
+        "Selenium",
+        "ckiptagger",
+        "association rule mining"
+      ],
+      "weight": 45,
+      "summary": "Crawled public opinion from Facebook fan pages and ran NLP analysis on reaction to Taiwan's COVID-19 economic stimulus policy.\n",
+      "links": [
+        {
+          "label": "Source",
+          "url": "https://github.com/ethancychen-tw/sentiment_analysis"
+        }
+      ]
+    },
+    {
+      "id": "ilong-course",
+      "title": "Data Science Courses for iLong",
+      "year": "2020-2021",
+      "tags": [
+        "teaching",
+        "ds",
+        "leadership"
+      ],
+      "tech": [
+        "Python",
+        "pandas",
+        "scikit-learn"
+      ],
+      "weight": 55,
+      "summary": "A discussion-driven data science course run inside an enterprise for both technical and non-technical staff. Course income was donated to NGOs.\n",
+      "links": [
+        {
+          "label": "Course materials",
+          "url": "https://github.com/ethancychen-tw/Data_Science_Course_iLong"
+        },
+        {
+          "label": "Lecture clip",
+          "url": "https://youtu.be/Gn62vAyiky0"
+        }
+      ]
+    },
+    {
+      "id": "milestone",
+      "title": "MileStone",
+      "year": 2020,
+      "tags": [
+        "swe",
+        "healthcare"
+      ],
+      "tech": [
+        "Google Apps Script",
+        "Google Workspace"
+      ],
+      "weight": 50,
+      "summary": "A system built on Google Workspace services to run evaluation of ENT doctors in Taiwan, cutting manual labour out of the process.\n",
+      "outcome": "evaluation error rate reduced from 7% to 0%",
+      "links": [
+        {
+          "label": "Slides",
+          "url": "https://docs.google.com/presentation/d/1YEUjbNgPbPLiWXkv2tDMZdm91YBhpvklIsEJi8EuSbk/edit?usp=sharing"
+        },
+        {
+          "label": "Photo",
+          "url": "https://www.facebook.com/GDG.Taoyuan/posts/634692820616262"
+        },
+        {
+          "label": "Study",
+          "url": "https://www.airitilibrary.com/Publication/alDetailedMesh?DocID=10196102-202109-202109100001-202109100001-155-163"
+        }
+      ],
+      "related": [
+        "epa-review-system"
+      ]
+    },
+    {
+      "id": "soft-drinks-forecast",
+      "title": "Soft Drinks Sales Forecasting",
+      "year": 2020,
+      "tags": [
+        "ds",
+        "forecasting",
+        "ml"
+      ],
+      "tech": [
+        "Python"
+      ],
+      "weight": 50,
+      "summary": "Six-month-ahead monthly sales forecasts for 70+ SKUs at a top soft drink manufacturer.\n",
+      "outcome": "20-30% accuracy improvement over the client data science team's methods",
+      "links": [
+        {
+          "label": "Slides",
+          "url": "https://drive.google.com/file/d/1zSSvhwHYQ7KeAv1TpuGK68bM22ribpYv/view"
+        }
+      ],
+      "related": [
+        "mobagel"
+      ]
+    },
+    {
+      "id": "time-series-study",
+      "title": "Delta Transformation — Time Series Study",
+      "year": 2020,
+      "tags": [
+        "ds",
+        "forecasting",
+        "ml",
+        "flagship"
+      ],
+      "tech": [
+        "ARIMA",
+        "Prophet",
+        "Random Forest",
+        "XGBoost"
+      ],
+      "weight": 60,
+      "summary": "Proposed \"Delta Transformation\", a preprocessing technique that makes tree-based models able to forecast time series carrying a trend component.\n",
+      "links": [
+        {
+          "label": "Slides",
+          "url": "https://drive.google.com/file/d/1zoOWbdjLv7xqhk1bVw7-llSBszcZx1u7/view"
+        }
+      ],
+      "related": [
+        "mobagel"
+      ],
+      "detail": {
+        "problem": "tree models cannot extrapolate beyond the range seen in training, so trended series break them"
+      }
+    },
+    {
+      "id": "taxonomy-metrics",
+      "title": "Taxonomy-Based Performance Metrics for Evaluating Taxonomic Assignment Methods",
+      "year": 2019,
+      "tags": [
+        "ds",
+        "bioinformatics",
+        "published",
+        "flagship"
+      ],
+      "weight": 65,
+      "summary": "Peer-reviewed study in metagenomics addressing pitfalls in hierarchical multiclass classification evaluation.\n",
+      "venue": "BMC Bioinformatics",
+      "links": [
+        {
+          "label": "Paper",
+          "url": "https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2896-0"
+        }
+      ],
+      "related": [
+        "delta"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "id": "ntu",
+      "institution": "National Taiwan University",
+      "credential": "MBA, Information Management",
+      "start": "2015-09",
+      "end": "2018-02",
+      "weight": 80,
+      "period": "Sep 2015 – Feb 2018"
+    },
+    {
+      "id": "ulb",
+      "institution": "Université libre de Bruxelles",
+      "credential": "Exchange program",
+      "start": "2017-09",
+      "end": "2018-02",
+      "note": "Exchange during the NTU MBA — nested, not sequential.",
+      "weight": 40,
+      "period": "Sep 2017 – Feb 2018"
+    },
+    {
+      "id": "nthu",
+      "institution": "National Tsing Hua University",
+      "credential": "B.S., Computer Science",
+      "start": "2010-09",
+      "end": "2014-06",
+      "weight": 70,
+      "period": "Sep 2010 – Jun 2014"
+    }
+  ],
+  "skills": {
+    "core": [
+      {
+        "name": "Python",
+        "evidence": [
+          "google",
+          "tresl",
+          "mobagel"
+        ],
+        "level": "expert"
+      },
+      {
+        "name": "SQL",
+        "evidence": [
+          "google",
+          "mediatek",
+          "tresl"
+        ],
+        "level": "expert"
+      },
+      {
+        "name": "dbt",
+        "evidence": [
+          "tresl",
+          "mediatek"
+        ],
+        "level": "expert"
+      },
+      {
+        "name": "Dataform",
+        "evidence": [
+          "mediatek",
+          "google"
+        ],
+        "level": "strong"
+      },
+      {
+        "name": "BigQuery",
+        "evidence": [
+          "mediatek",
+          "tresl"
+        ],
+        "level": "strong"
+      },
+      {
+        "name": "Snowflake",
+        "evidence": [
+          "tresl"
+        ],
+        "level": "working"
+      },
+      {
+        "name": "Airflow",
+        "evidence": [
+          "mediatek"
+        ],
+        "level": "strong"
+      },
+      {
+        "name": "GCP",
+        "evidence": [
+          "google",
+          "mediatek",
+          "tresl"
+        ],
+        "level": "strong"
+      },
+      {
+        "name": "AWS",
+        "evidence": [
+          "tresl",
+          "epa-review-system"
+        ],
+        "level": "working"
+      },
+      {
+        "name": "Docker",
+        "level": "strong"
+      }
+    ],
+    "data_science": [
+      {
+        "name": "Time series forecasting",
+        "evidence": [
+          "mobagel",
+          "time-series-study",
+          "soft-drinks-forecast"
+        ]
+      },
+      {
+        "name": "Machine learning",
+        "evidence": [
+          "mobagel",
+          "tresl"
+        ]
+      },
+      {
+        "name": "Statistics / SPC",
+        "evidence": [
+          "mobagel",
+          "delta"
+        ]
+      },
+      {
+        "name": "NLP",
+        "evidence": [
+          "sentiment-analysis"
+        ]
+      },
+      {
+        "name": "Data mining",
+        "evidence": [
+          "tresl"
+        ]
+      }
+    ],
+    "practice": [
+      {
+        "name": "Scrum"
+      },
+      {
+        "name": "Shape Up",
+        "evidence": [
+          "google"
+        ]
+      },
+      {
+        "name": "Design thinking"
+      }
+    ],
+    "archive": [
+      {
+        "name": "R",
+        "evidence": [
+          "delta"
+        ]
+      },
+      {
+        "name": "JavaScript"
+      },
+      {
+        "name": "Flask",
+        "evidence": [
+          "epa-review-system"
+        ]
+      },
+      {
+        "name": "Selenium",
+        "evidence": [
+          "sentiment-analysis"
+        ]
+      },
+      {
+        "name": "Jira"
+      },
+      {
+        "name": "Redis",
+        "evidence": [
+          "mediatek"
+        ]
+      },
+      {
+        "name": "Dash",
+        "evidence": [
+          "mediatek"
+        ]
+      },
+      {
+        "name": "Drone CI",
+        "evidence": [
+          "mediatek"
+        ]
+      },
+      {
+        "name": "Hex.tech",
+        "evidence": [
+          "tresl"
+        ]
+      }
+    ]
+  },
+  "taxonomy": {
+    "function": {
+      "swe": "Software engineering / systems build",
+      "data-platform": "Platform & framework work others build on",
+      "data-eng": "Pipelines, ELT, warehouse modelling",
+      "ds": "Data science, modelling, research",
+      "analytics": "Analysis, metrics, dashboards, stakeholder-facing",
+      "leadership": "Leading design, mentoring, hiring, teaching"
+    },
+    "domain": {
+      "infra": "Infrastructure, cloud, cost, migration",
+      "ml": "Machine learning",
+      "forecasting": "Time series & forecasting",
+      "nlp": "Natural language processing",
+      "ecommerce": "Retail / DTC / Shopify",
+      "mobile": "Mobile devices & telemetry",
+      "bioinformatics": "Genomics, metagenomics",
+      "healthcare": "Clinical / medical workflows"
+    },
+    "signal": {
+      "current": "Present role — always rendered",
+      "flagship": "Strongest evidence of ability; survives the harshest one-page cut",
+      "published": "Peer-reviewed or externally published",
+      "teaching": "Talks, workshops, courses"
+    }
+  }
+}

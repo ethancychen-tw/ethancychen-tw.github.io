@@ -1,0 +1,256 @@
+/* ============================================================
+   CV theme — one stylesheet for screen and print.
+   Screen follows the reader's colour scheme; print is locked to
+   light with explicit page geometry.
+   ============================================================ */
+
+:root {
+  --ink:        #16181d;
+  --ink-muted:  #5b6270;
+  --ink-faint:  #878e9c;
+  --rule:       #e2e5ea;
+  --accent:     #1a4fa0;
+  --bg:         #ffffff;
+
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  --measure: 46rem;
+  --gap-section: 1.65rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ink:       #e6e8ec;
+    --ink-muted: #a1a8b5;
+    --ink-faint: #767d8a;
+    --rule:      #2b2f38;
+    --accent:    #7ea8ee;
+    --bg:        #14161a;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 3.5rem 1.5rem 5rem;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+}
+
+main { max-width: var(--measure); margin: 0 auto; }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---------- header ---------- */
+
+.masthead { margin-bottom: 2rem; }
+
+.masthead h1 {
+  margin: 0;
+  font-size: 2.05rem;
+  font-weight: 650;
+  letter-spacing: -0.022em;
+  line-height: 1.15;
+}
+
+.headline {
+  margin: 0.3rem 0 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink-muted);
+}
+
+.contact {
+  margin: 0.7rem 0 0;
+  font-size: 0.86rem;
+  color: var(--ink-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.8rem;
+}
+.contact li { list-style: none; }
+.contact { padding: 0; }
+
+.summary {
+  margin: 1.1rem 0 0;
+  font-size: 0.95rem;
+  color: var(--ink-muted);
+  max-width: 38rem;
+}
+
+/* ---------- sections ---------- */
+
+section { margin-top: var(--gap-section); }
+
+h2 {
+  margin: 0 0 0.85rem;
+  padding-bottom: 0.32rem;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.72rem;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: var(--ink-faint);
+}
+
+/* ---------- entries ---------- */
+
+.entry { margin-bottom: 1.15rem; break-inside: avoid; }
+.entry:last-child { margin-bottom: 0; }
+
+.entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.entry-title { margin: 0; font-size: 0.98rem; font-weight: 600; }
+.entry-title .org { font-weight: 500; color: var(--ink-muted); }
+.entry-title .org::before { content: " · "; color: var(--ink-faint); }
+
+.dates {
+  flex: none;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.role-summary { margin: 0.2rem 0 0; font-size: 0.9rem; color: var(--ink-muted); }
+
+.entry ul { margin: 0.42rem 0 0; padding-left: 1.05rem; }
+.entry li { margin-bottom: 0.28rem; }
+.entry li::marker { color: var(--ink-faint); }
+
+.outcome { font-weight: 600; color: var(--ink); }
+
+.detail-link {
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  margin-top: 0.3rem;
+  display: inline-block;
+}
+
+/* ---------- skills ---------- */
+
+.skills { display: grid; gap: 0.45rem; }
+.skill-row { display: grid; grid-template-columns: 8.5rem 1fr; gap: 0.75rem; font-size: 0.9rem; }
+.skill-row dt { color: var(--ink-faint); font-size: 0.8rem; padding-top: 0.08rem; }
+.skill-row dd { margin: 0; }
+
+/* ---------- projects ---------- */
+
+.project .entry-title { font-size: 0.94rem; }
+.tech { font-size: 0.82rem; color: var(--ink-faint); font-style: italic; }
+.links { font-size: 0.82rem; }
+.links a { margin-right: 0.6rem; }
+
+/* ---------- footer / machine layer ---------- */
+
+.colophon {
+  margin-top: 2.5rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
+.colophon a { color: var(--ink-muted); }
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 34rem) {
+  body { padding: 2rem 1.1rem 3rem; font-size: 14.5px; }
+  .masthead h1 { font-size: 1.6rem; }
+  .entry-head { flex-direction: column; gap: 0.1rem; }
+  .skill-row { grid-template-columns: 1fr; gap: 0.1rem; }
+}
+
+/* ---------- print ---------- */
+
+@page {
+  size: A4;
+  margin: 12mm 15mm 11mm;
+}
+
+@media print {
+  :root {
+    --ink: #000; --ink-muted: #333; --ink-faint: #666;
+    --rule: #ccc; --accent: #000; --bg: #fff;
+  }
+  body { padding: 0; font-size: 9.2pt; line-height: 1.38; }
+  main { max-width: none; }
+  a { color: #000; text-decoration: none; }
+  .masthead { margin-bottom: 1.1rem; }
+  .masthead h1 { font-size: 19pt; }
+  h2 { font-size: 7.6pt; margin-bottom: 0.5rem; }
+  section { margin-top: 0.8rem; }
+  .entry { margin-bottom: 0.55rem; }
+  .colophon, .detail-link { display: none; }
+  /* Never orphan a heading from its first entry. */
+  h2 { break-after: avoid; }
+}
+
+/* ---------- detail pages (layer 1) ---------- */
+
+.crumb { margin: 0 0 1.1rem; font-size: 0.84rem; }
+.crumb a { color: var(--ink-faint); }
+
+.deep { margin-top: 2.1rem; break-inside: auto; }
+.deep h2 {
+  border: 0;
+  padding: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-transform: none;
+  letter-spacing: -0.008em;
+  color: var(--ink);
+}
+
+.outcome-line {
+  margin: 0 0 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.deep .tech {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.78rem;
+}
+
+dl.detail {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 10rem 1fr;
+  gap: 0.55rem 1.2rem;
+  border-left: 2px solid var(--rule);
+  padding-left: 1.1rem;
+}
+dl.detail dt {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-faint);
+  padding-top: 0.13rem;
+}
+dl.detail dd { margin: 0; font-size: 0.92rem; }
+
+.pending { font-size: 0.88rem; color: var(--ink-faint); font-style: italic; }
+
+@media (max-width: 34rem) {
+  dl.detail { grid-template-columns: 1fr; gap: 0.15rem; padding-left: 0.8rem; }
+  dl.detail dd { margin-bottom: 0.6rem; }
+}

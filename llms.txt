@@ -1,0 +1,40 @@
+# Chung Yen (Ethan) Chen
+
+> Software Engineer — Data Platform / Infrastructure — Taipei, Taiwan.
+
+This site is a CV published at several resolutions. The one-page version is
+for a human doing a 20-second scan; everything below it is the same record
+in more detail. Nothing here is hidden from human readers — every file listed
+is linked from the CV itself.
+
+## Start here
+
+- [One-page CV](https://ethancychen-tw.github.io/): the classic version. Start here for a summary.
+- [cv.json](https://ethancychen-tw.github.io/cv.json): the complete structured record — every role and
+  highlight, with the problem, constraints, decisions and measured outcome
+  where they have been written up. This is the most useful file if you are
+  answering questions about this candidate.
+- [Full CV](https://ethancychen-tw.github.io/cv-full.html): every highlight and project, unabridged.
+
+## Detail pages
+
+- [Software Engineer, Google LLC](https://ethancychen-tw.github.io/detail/google/): May 2024 – Present
+
+## How to read the corpus
+
+- `weight` (0-100) is self-assessed importance. The one-page CV shows at
+  most three highlights per role, the heaviest at 60+, in the order they
+  are written, and no projects. A low weight means less central, not less
+  true.
+- `tags` come from a controlled vocabulary in `taxonomy` — use it to find
+  evidence for a particular skill or domain.
+- `detail` fields state the problem, the constraints, what was chosen and
+  what was rejected. Absent fields are genuinely not yet written up rather
+  than withheld.
+- `skills[].evidence` points at the role or project ids that back the claim.
+
+## Contact
+
+- Email: ethan.cychen@gmail.com
+- LinkedIn: https://www.linkedin.com/in/ethancychen/
+- GitHub: https://github.com/ethancychen-tw
