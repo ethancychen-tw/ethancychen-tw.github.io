@@ -4,8 +4,9 @@
 
 This site is a CV published at several resolutions. The one-page version is
 for a human doing a 20-second scan; everything below it is the same record
-in more detail. Nothing here is hidden from human readers — every file listed
-is linked from the CV itself.
+in more detail. Every file listed is linked from the CV itself; cv.json also
+carries a few reference fields the pages leave out: spoken languages and the
+list of archived older skills.
 
 ## Start here
 
@@ -19,6 +20,7 @@ is linked from the CV itself.
 ## Detail pages
 
 - [Software Engineer, Google LLC](https://ethancychen-tw.github.io/detail/google/): May 2024 – Present
+- [Senior Data Scientist, Tresl Inc](https://ethancychen-tw.github.io/detail/tresl/): Aug 2020 – Aug 2022
 
 ## How to read the corpus
 

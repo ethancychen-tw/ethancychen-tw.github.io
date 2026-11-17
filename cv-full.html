@@ -86,7 +86,7 @@
 <p class="role-summary">Data platform engineering for Android and Pixel; owns a cross-org analytics-engineering framework.</p>      <ul>
         <li>Joined to scale a 20-model data platform whose deploys failed outright roughly weekly. Made version control the only deploy source and generated workflow DAGs from declared dependencies; deploys have succeeded since. The first version of what became the framework came out of that work.
 </li>
-        <li>Designed and built an analytics-engineering framework that brings dbt&#39;s model — SELECT-as-model, lineage, materialisations, quality tests — to Google&#39;s internal query engine and dashboards, with agent skills that let engineers without an analytics-engineering background build documented, tested models.
+        <li>Designed and built an analytics-engineering framework that brings dbt&#39;s model — SELECT-as-model, lineage, materialisations, quality tests — to Google&#39;s internal query engine and dashboards.
  <span class="outcome">5x faster data model development, as reported by its first users in 2024.</span></li>
         <li>Grew the framework by word of mouth to 13 data platforms and 1,000+ data models for thousands of users, in business units well beyond its Pixel/Android home.
 </li>
@@ -107,7 +107,7 @@
  <span class="outcome">30x faster identification of resource anomalies.</span></li>
         <li>Chose the stack with IT to fit infrastructure constraints (Dash, Redis, Drone CI, Airflow, Dataform) and built the models and dashboards behind M&#39;s analyses.
  <span class="outcome">90% reduction in analytics processing time for M data.</span></li>
-        <li>Ran a cross-departmental technical workshop for 40 people introducing dbt and dataform, and best practices for large-database management and filter queries.
+        <li>Ran a cross-departmental technical workshop for 40 people introducing dbt and Dataform, and best practices for large-database management and filter queries.
 </li>
       </ul>
     </article>
@@ -116,20 +116,23 @@
         <h3 class="entry-title">Senior Data Scientist<span class="org"><a href="https://www.tresl.co/">Tresl Inc</a></span></h3>
         <span class="dates">Aug 2020 – Aug 2022</span>
       </div>
-<p class="role-summary">Data science and data engineering for a customer-analytics product serving Shopify DTC brands.</p>      <ul>
-        <li>Built a unified metric calculation framework for Shopify DTC brands, consolidating 70% of metric computation across millions of products and hundreds of millions of orders.
-</li>
+<p class="role-summary">Data science and data engineering for a Shopify DTC analytics product on AWS, Snowflake and GCP.</p>      <ul>
+        <li>Designed a unified metric calculation framework that replaced 70% of the product&#39;s metric endpoints, across millions of products and hundreds of millions of orders.
+ <span class="outcome">Product, customer and order reports stopped disagreeing after rollout.</span></li>
         <li>Pioneered &#34;Product Journey&#34; in Segments, Tresl&#39;s main product, showing brands what customers bought on their 1st, 2nd and 3rd orders.
  <span class="outcome">40% increase in new subscription business.</span></li>
-        <li>Simplified the ELT pipeline with dbt — cutting code redundancy and streamlining metric computation, including a rebuild of customer lifetime value (CLV) modelling for accurate forecasting across thousands of brands.
+        <li>Simplified the batch ELT pipeline with dbt — cutting code redundancy in its precomputed aggregates, including a rebuild of customer lifetime value (CLV) modelling for accurate forecasting across thousands of brands.
  <span class="outcome">40% faster and more maintainable pipeline.</span></li>
         <li>Helped migrate core data infrastructure AWS → Snowflake → GCP, tuning database settings, partitioning and clustering.
  <span class="outcome">80%+ reduction in operating cost.</span></li>
+        <li>Led bets across 6–7 six-week Shape Up cycles, writing the pitches — all chosen and shipped, including Product Journey, the metric framework and a cohort module — with 2–3-person squads.
+</li>
         <li>Worked directly with non-technical teams at large e-commerce brands (True Botanicals, Meshki, Labatt) across beauty, fashion and F&amp;B — presenting analytics insights and building dashboards.
 </li>
         <li>Took part in recruiting and growing the data and engineering team.
  <span class="outcome">5x team growth.</span></li>
       </ul>
+      <a class="detail-link" href="detail/tresl/">Full detail →</a>
     </article>
     <article class="entry">
       <div class="entry-head">
@@ -265,8 +268,8 @@
   </section>
 
   <footer class="colophon">
-    <p>The <a href="cv-full.html">full CV</a> lists every highlight and project;
-      roles with more depth link to a detail page above.
+    <p>This is the full CV; the <a href="index.html">one-page version</a> is the
+      short read. Roles with more depth link to a detail page above.
       Reading this as an agent? The same record is at
       <a href="cv.json">cv.json</a> and <a href="llms.txt">llms.txt</a>.</p>
   </footer>

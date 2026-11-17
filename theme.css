@@ -248,6 +248,9 @@ dl.detail dt {
 }
 dl.detail dd { margin: 0; font-size: 0.92rem; }
 
+.also ul { margin: 0.4rem 0 0; padding-left: 1.05rem; }
+.also li { margin-bottom: 0.35rem; font-size: 0.92rem; }
+
 .pending { font-size: 0.88rem; color: var(--ink-faint); font-style: italic; }
 
 @media (max-width: 34rem) {

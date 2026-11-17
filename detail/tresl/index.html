@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Senior Data Scientist, Tresl Inc — Chung Yen (Ethan) Chen</title>
+<link rel="stylesheet" href="../../theme.css">
+</head>
+<body>
+<main>
+  <header class="masthead">
+    <p class="crumb"><a href="../../">← Chung Yen (Ethan) Chen</a></p>
+    <h1>Senior Data Scientist</h1>
+    <p class="headline">Tresl Inc · Aug 2020 – Aug 2022</p>
+    <p class="summary">Expanded detail behind the one-page CV: the problem each
+      piece of work addressed, what was chosen, and what it changed. Same facts,
+      more resolution.</p>
+  </header>
+
+  <section class="deep">
+    <h2>Designed a unified metric calculation framework that replaced 70% of the product&#39;s metric endpoints, across millions of products and hundreds of millions of orders.</h2>
+<p class="outcome-line">Product, customer and order reports stopped disagreeing after rollout</p><p class="tech">SQL · Python</p>    <dl class="detail">
+      <dt>The problem</dt><dd>Metrics were served by a set of versioned endpoints — one each for orders, customers and products — each with its own filter parameters. They overlapped: order counts, orders in a date range, items purchased, subtotals and average revenue per user all appeared in more than one, and each endpoint composed its query from scratch, in its own order, over the same customer → order → item → product chain, so the same number could differ by endpoint. Filters were worse. &#34;Bought product A but not B, last year&#34; could mean customers who did so last year, customers who ever did and also ordered last year, or orders containing A but not B — and each endpoint read it its own way, so product, customer and order reports disagreed. Every endpoint also returned all the metrics it knew, whether the caller needed them or not.</dd>
+      <dt>Approach</dt><dd>One rule first: a filter selects customers by their behaviour — never orders or products — and behaviours that depend on each other share one time window, so &#34;bought A but not B, last year&#34; means customers who did exactly that last year. That is the audience a marketing campaign wants to target. Given that set of customers, the framework composes the query with the SQLAlchemy ORM over customer, order, item and product entities, so every metric walks the same joins in the same order. The warehouse computes only primitive metrics — counts of orders and customers, subtotals — and derived ones such as average revenue per user are calculated from them in the backend: a dozen divisions there are simpler to maintain than another subquery per ratio. A request returns only the metrics the front end asks for, and time-series and cohort breakdowns plug in on top of the same primitives.
+
+It runs at request time: brand users pick filters in the product&#39;s UI, so metrics are computed live rather than precomputed — which is why it stayed in the serving layer when the team later adopted dbt for its ELT.</dd>
+      <dt>Outcome</dt><dd>Only 30% of the metric endpoints remained; the framework replaced the rest. After rollout, reports built around products, customers and orders stopped disagreeing — no inconsistent-metric issue came up again.</dd>
+      <dt>Scale</dt><dd>millions of products, hundreds of millions of orders</dd>
+      <dt>Collaboration</dt><dd>I designed the framework and built its prototype; the team&#39;s tech lead then helped wrap it in a data-access-object layer for production use.</dd>
+    </dl>
+  </section>
+
+  <section class="deep also">
+    <h2>Also at Tresl Inc</h2>
+    <ul>
+      <li>Pioneered &#34;Product Journey&#34; in Segments, Tresl&#39;s main product, showing brands what customers bought on their 1st, 2nd and 3rd orders. <span class="outcome">40% increase in new subscription business.</span></li>
+      <li>Simplified the batch ELT pipeline with dbt — cutting code redundancy in its precomputed aggregates, including a rebuild of customer lifetime value (CLV) modelling for accurate forecasting across thousands of brands. <span class="outcome">40% faster and more maintainable pipeline.</span></li>
+      <li>Helped migrate core data infrastructure AWS → Snowflake → GCP, tuning database settings, partitioning and clustering. <span class="outcome">80%+ reduction in operating cost.</span></li>
+      <li>Led bets across 6–7 six-week Shape Up cycles, writing the pitches — all chosen and shipped, including Product Journey, the metric framework and a cohort module — with 2–3-person squads.</li>
+      <li>Worked directly with non-technical teams at large e-commerce brands (True Botanicals, Meshki, Labatt) across beauty, fashion and F&amp;B — presenting analytics insights and building dashboards.</li>
+      <li>Took part in recruiting and growing the data and engineering team. <span class="outcome">5x team growth.</span></li>
+    </ul>
+  </section>
+
+  <footer class="colophon">
+    <p><a href="../../">← Back to the CV</a> ·
+       The same record in structured form: <a href="../../cv.json">cv.json</a></p>
+  </footer>
+</main>
+</body>
+</html>
